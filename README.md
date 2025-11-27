@@ -83,9 +83,33 @@ This will:
 - `SUPABASE_SERVICE_ROLE_KEY`: Service role key for backend operations
 - `SUPABASE_KEY`: Optional fallback key
 
+## GitHub Actions (Automated Sync)
+
+The repository includes a GitHub Actions workflow that runs the sync script every hour automatically.
+
+### Setup GitHub Actions
+
+1. Go to your repository on GitHub
+2. Navigate to **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** and add:
+   - Name: `SUPABASE_URL`
+     Value: Your Supabase project URL
+   - Name: `SUPABASE_SERVICE_ROLE_KEY`
+     Value: Your Supabase service role key
+
+4. The workflow will automatically run every hour
+5. You can also manually trigger it: **Actions** tab → **Sync Orders from Metabase** → **Run workflow**
+
+### Workflow Details
+
+- **Schedule**: Runs every hour at minute 0 (e.g., 1:00, 2:00, 3:00)
+- **Manual Trigger**: Available from the Actions tab
+- **Logs**: View execution logs in the Actions tab
+
 ## Notes
 
 - The script uses upsert operations, so running it multiple times is safe
 - Orders are identified by `order_id` (unique constraint)
 - Failed operations will be retried up to 3 times
+- GitHub Actions runs on Ubuntu latest with Python 3.11
 

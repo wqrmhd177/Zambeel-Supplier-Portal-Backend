@@ -4,9 +4,10 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import time
 
-# Load environment variables
-load_dotenv('.env.local')
-load_dotenv()
+# Load environment variables (optional - for local development)
+# In GitHub Actions, environment variables are set directly
+load_dotenv('.env.local')  # Try to load local env file (may not exist in CI)
+load_dotenv()  # Fallback to .env if it exists
 
 # Supabase Setup
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
