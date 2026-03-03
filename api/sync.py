@@ -96,21 +96,31 @@ def sync_orders():
     try:
         response = fetch_json(ORDERS_URL)
         
+        # Log response structure for debugging
+        print(f"📋 Metabase response type: {type(response)}")
+        if isinstance(response, dict):
+            print(f"📋 Dictionary keys: {list(response.keys())}")
+        
         # Handle different response formats from Metabase
         if isinstance(response, dict):
             # If response is a dict, try to extract the data array
             # Common keys: 'data', 'rows', 'results'
             if 'data' in response:
                 orders_data = response['data']
+                print(f"📋 Found 'data' key with {len(orders_data) if isinstance(orders_data, list) else 'non-list'} items")
             elif 'rows' in response:
                 orders_data = response['rows']
+                print(f"📋 Found 'rows' key with {len(orders_data) if isinstance(orders_data, list) else 'non-list'} items")
             elif 'results' in response:
                 orders_data = response['results']
+                print(f"📋 Found 'results' key with {len(orders_data) if isinstance(orders_data, list) else 'non-list'} items")
             else:
                 # If it's a dict but doesn't have expected keys, treat it as a single row
+                print(f"⚠️ Dictionary doesn't have expected keys, treating as single row")
                 orders_data = [response]
         elif isinstance(response, list):
             orders_data = response
+            print(f"📋 Direct list with {len(orders_data)} items")
         else:
             raise ValueError(f"Unexpected response type from Metabase: {type(response)}")
         
@@ -118,7 +128,12 @@ def sync_orders():
             return {
                 "success": True,
                 "message": "No orders found from Metabase",
-                "total_orders": 0
+                "total_orders": 0,
+                "debug_info": {
+                    "response_type": str(type(response)),
+                    "response_keys": list(response.keys()) if isinstance(response, dict) else "not_a_dict",
+                    "response_preview": str(response)[:500]
+                }
             }
         
         # Check if first item is a dict
@@ -258,12 +273,22 @@ def sync_orders():
     print(f"✅ Upserted {len(order_rows)} orders with historical prices")
     print("=" * 60)
     
-    return {
+    result = {
         "success": True,
         "total_orders": len(order_rows),
         "orders_with_prices": orders_with_prices,
-        "new_price_lookups": len(orders_needing_price)
+        "new_price_lookups": len(orders_needing_price),
+        "skipped_orders": skipped
     }
+    
+    # Add debug info if no orders were processed
+    if len(order_rows) == 0:
+        result["debug_info"] = {
+            "raw_metabase_count": len(orders_data) if 'orders_data' in locals() else 0,
+            "message": "Orders were fetched but none were processed. Check if they have order_id and sku."
+        }
+    
+    return result
 
 # Vercel serverless function handler
 class handler(BaseHTTPRequestHandler):
