@@ -94,11 +94,25 @@ def sync_orders():
     
     print("Fetching orders from Metabase...")
     try:
-        orders_data = fetch_json(ORDERS_URL)
+        response = fetch_json(ORDERS_URL)
         
-        # Check if data is valid
-        if not isinstance(orders_data, list):
-            raise ValueError(f"Expected list from Metabase, got {type(orders_data)}")
+        # Handle different response formats from Metabase
+        if isinstance(response, dict):
+            # If response is a dict, try to extract the data array
+            # Common keys: 'data', 'rows', 'results'
+            if 'data' in response:
+                orders_data = response['data']
+            elif 'rows' in response:
+                orders_data = response['rows']
+            elif 'results' in response:
+                orders_data = response['results']
+            else:
+                # If it's a dict but doesn't have expected keys, treat it as a single row
+                orders_data = [response]
+        elif isinstance(response, list):
+            orders_data = response
+        else:
+            raise ValueError(f"Unexpected response type from Metabase: {type(response)}")
         
         if len(orders_data) == 0:
             return {
@@ -109,7 +123,7 @@ def sync_orders():
         
         # Check if first item is a dict
         if not isinstance(orders_data[0], dict):
-            raise ValueError(f"Expected dict in orders list, got {type(orders_data[0])}")
+            raise ValueError(f"Expected dict in orders list, got {type(orders_data[0])}. First item: {orders_data[0]}")
         
         print(f"✅ Fetched {len(orders_data)} orders")
     except Exception as e:
