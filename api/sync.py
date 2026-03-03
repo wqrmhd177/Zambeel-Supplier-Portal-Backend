@@ -93,8 +93,29 @@ def sync_orders():
     print("=" * 60)
     
     print("Fetching orders from Metabase...")
-    orders_data = fetch_json(ORDERS_URL)
-    print(f"✅ Fetched {len(orders_data)} orders")
+    try:
+        orders_data = fetch_json(ORDERS_URL)
+        
+        # Check if data is valid
+        if not isinstance(orders_data, list):
+            raise ValueError(f"Expected list from Metabase, got {type(orders_data)}")
+        
+        if len(orders_data) == 0:
+            return {
+                "success": True,
+                "message": "No orders found from Metabase",
+                "total_orders": 0
+            }
+        
+        # Check if first item is a dict
+        if not isinstance(orders_data[0], dict):
+            raise ValueError(f"Expected dict in orders list, got {type(orders_data[0])}")
+        
+        print(f"✅ Fetched {len(orders_data)} orders")
+    except Exception as e:
+        error_msg = f"Error fetching orders from Metabase: {str(e)}"
+        print(f"❌ {error_msg}")
+        raise Exception(error_msg)
     
     print("Fetching existing orders from Supabase...")
     existing_orders = {}
@@ -238,12 +259,18 @@ class handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps(result).encode())
+            self.wfile.write(json.dumps(result, indent=2).encode())
         except Exception as e:
+            import traceback
+            error_details = {
+                "error": str(e),
+                "type": type(e).__name__,
+                "traceback": traceback.format_exc()
+            }
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self.wfile.write(json.dumps(error_details, indent=2).encode())
     
     def do_POST(self):
         self.do_GET()
