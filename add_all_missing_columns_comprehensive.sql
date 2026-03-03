@@ -8,6 +8,7 @@
 -- Add all columns with IF NOT EXISTS (safe to run multiple times)
 ALTER TABLE users 
 ADD COLUMN IF NOT EXISTS user_id TEXT UNIQUE,
+ADD COLUMN IF NOT EXISTS full_name TEXT,
 ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE,
 ADD COLUMN IF NOT EXISTS account_approval TEXT DEFAULT 'Wait',
 ADD COLUMN IF NOT EXISTS bank_title TEXT,
