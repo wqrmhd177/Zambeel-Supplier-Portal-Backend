@@ -1,115 +1,35 @@
-# Supplier Portal - Backend
+# Zambeel Supplier Portal - Backend
 
-Python backend scripts for syncing orders data from Metabase to Supabase.
+Backend API for syncing orders from Metabase to Supabase.
 
-## Features
+## 🚀 Deployment
 
-- Fetches orders data from Metabase public API
-- Syncs orders to Supabase database
-- Handles upsert operations (insert new, update existing)
-- Retry logic for failed operations
+Deployed on Vercel as serverless functions.
 
-## Prerequisites
+### API Endpoints
 
-- Python 3.8 or higher
-- pip (Python package manager)
+- `GET /api/sync` - Trigger order synchronization
+- Runs automatically every hour via Vercel Cron
 
-## Installation
+## 🔐 Environment Variables
 
-1. Navigate to the backend directory:
-```bash
-cd backend
+Required environment variables on Vercel:
+
 ```
-
-2. Create a virtual environment (recommended):
-```bash
-python -m venv venv
-```
-
-3. Activate the virtual environment:
-   - On Windows: `venv\Scripts\activate`
-   - On macOS/Linux: `source venv/bin/activate`
-
-4. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-## Configuration
-
-1. Copy the environment template:
-```bash
-copy .env.example .env.local
-```
-
-2. Edit `.env.local` and add your Supabase credentials:
-```
-SUPABASE_URL=your_supabase_project_url
+SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
-## Database Setup
-
-Before running the sync script, ensure the orders table exists in your Supabase database. Run the SQL script:
+## 📦 Local Development
 
 ```bash
-# Execute create_orders_table.sql in your Supabase SQL editor
-```
-
-Or use the Supabase dashboard to run the SQL from `create_orders_table.sql`.
-
-## Usage
-
-Run the orders sync script:
-
-```bash
+pip install -r requirements.txt
 python main.py
 ```
 
-This will:
-1. Fetch orders from Metabase
-2. Transform the data
-3. Upsert orders to Supabase (insert new, update existing based on order_id)
+## ⚙️ How It Works
 
-## Script Details
-
-- **Metabase URL**: Configured in `main.py` (ORDERS_URL)
-- **Sync Frequency**: Run manually or set up as a scheduled task/cron job
-- **Data Columns**: order_id, vendor_id, order_date, phone, country, title, sku, total_payable, status
-
-## Environment Variables
-
-- `SUPABASE_URL`: Your Supabase project URL
-- `SUPABASE_SERVICE_ROLE_KEY`: Service role key for backend operations
-- `SUPABASE_KEY`: Optional fallback key
-
-## GitHub Actions (Automated Sync)
-
-The repository includes a GitHub Actions workflow that runs the sync script every hour automatically.
-
-### Setup GitHub Actions
-
-1. Go to your repository on GitHub
-2. Navigate to **Settings** → **Secrets and variables** → **Actions**
-3. Click **New repository secret** and add:
-   - Name: `SUPABASE_URL`
-     Value: Your Supabase project URL
-   - Name: `SUPABASE_SERVICE_ROLE_KEY`
-     Value: Your Supabase service role key
-
-4. The workflow will automatically run every hour
-5. You can also manually trigger it: **Actions** tab → **Sync Orders from Metabase** → **Run workflow**
-
-### Workflow Details
-
-- **Schedule**: Runs every hour at minute 0 (e.g., 1:00, 2:00, 3:00)
-- **Manual Trigger**: Available from the Actions tab
-- **Logs**: View execution logs in the Actions tab
-
-## Notes
-
-- The script uses upsert operations, so running it multiple times is safe
-- Orders are identified by `order_id` (unique constraint)
-- Failed operations will be retried up to 3 times
-- GitHub Actions runs on Ubuntu latest with Python 3.11
-
+1. Fetches orders from Metabase public API
+2. Syncs to Supabase orders table
+3. Preserves historical prices for existing orders
+4. Looks up current prices for new orders
