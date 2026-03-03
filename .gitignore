@@ -44,9 +44,9 @@ venv.bak/
 .DS_Store
 Thumbs.db
 *.log
-
 # Python specific
 .pytest_cache/
 .coverage
 htmlcov/
+
 
