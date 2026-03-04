@@ -5,8 +5,8 @@
 -- ============================================================================
 
 -- Create sequences for product_id and variant_id
-CREATE SEQUENCE IF NOT EXISTS products_product_id_seq START WITH 1000;
-CREATE SEQUENCE IF NOT EXISTS products_variant_id_seq START WITH 1000;
+CREATE SEQUENCE IF NOT EXISTS products_product_id_seq START WITH 1;
+CREATE SEQUENCE IF NOT EXISTS products_variant_id_seq START WITH 1;
 
 -- Make product_id and variant_id columns use sequences as default
 ALTER TABLE products 
@@ -44,7 +44,7 @@ BEGIN
   RAISE NOTICE '============================================================================';
   RAISE NOTICE '✅ PRODUCT ID AUTO-GENERATION CONFIGURED!';
   RAISE NOTICE '============================================================================';
-  RAISE NOTICE 'product_id and variant_id will now auto-generate starting from 1000';
+  RAISE NOTICE 'product_id and variant_id will now auto-generate starting from 1, 2, 3...';
   RAISE NOTICE '';
   RAISE NOTICE 'How it works:';
   RAISE NOTICE '  - If you do not provide product_id, it auto-generates';
