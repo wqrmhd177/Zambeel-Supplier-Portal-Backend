@@ -21,7 +21,7 @@ OLD_SUPABASE_URL = input("Enter OLD Supabase URL: ").strip()
 OLD_SUPABASE_KEY = input("Enter OLD Service Role Key: ").strip()
 
 # NEW DATABASE (destination)
-NEW_SUPABASE_URL = "https://puoedxxoxyrdlesdghyp.supabase.co"
+NEW_SUPABASE_URL = "https://YOUR_PROJECT.supabase.co"
 NEW_SUPABASE_KEY = input("Enter NEW Service Role Key: ").strip()
 
 # Tables to migrate (in order to respect dependencies)
@@ -258,3 +258,4 @@ if __name__ == "__main__":
         print(f"\n\n❌ Unexpected error: {e}")
         import traceback
         traceback.print_exc()
+

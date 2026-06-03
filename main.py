@@ -48,7 +48,7 @@ def upsert_with_retry(table, data, max_retries=3):
             if attempt < max_retries - 1:
                 print(f"⚠️ Attempt {attempt + 1} failed, retrying...")
                 time.sleep(5)
-else:
+            else:
                 raise
 
 def build_price_lookup_maps(unique_skus):
@@ -177,7 +177,7 @@ def sync_orders():
         # Skip rows without both order_id and sku (required for composite key)
         if not order_id or not sku:
             skipped += 1
-                    continue
+            continue
                 
         # Check if this order already has a historical price
         key = (order_id, sku)
